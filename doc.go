@@ -25,13 +25,14 @@ func ConvertDoc(r io.Reader) (string, map[string]string, error) {
 	// Meta data
 	mc := make(chan map[string]string, 1)
 	go func() {
+		meta := make(map[string]string)
+
 		defer func() {
 			if e := recover(); e != nil {
 				log.Printf("panic when reading doc format: %v", e)
+				mc <- meta
 			}
 		}()
-
-		meta := make(map[string]string)
 
 		doc, err := mscfb.New(f)
 		if err != nil {
